@@ -252,7 +252,16 @@ export function apply(ctx, config) {
     const child = spawn(python.command, [...python.prefix, '-X', 'utf8', SCRIPT, String(port)], {
       cwd: state.dataDir,
       windowsHide: true,
-      env: { ...process.env, PYTHONIOENCODING: 'utf-8', PYTHONUTF8: '1' },
+      env: {
+        ...process.env,
+        PYTHONIOENCODING: 'utf-8',
+        PYTHONUTF8: '1',
+        // 显式钉到这家库：不然 memory_view 会回落到「聊天机器人」那份默认库，
+        // 新用户就会看到别人的记忆。
+        SHARED_DB: path.join(state.dataDir, 'bridge.db'),
+        VIEW_DB: path.join(state.dataDir, 'brain.db'),
+        NEBULA_DATA: path.join(state.dataDir, 'data'),
+      },
       stdio: ['ignore', 'pipe', 'pipe'],
     })
     let stderr = ''
