@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Memory Nebula",
+    "description": "Brings an AI memory store into DSH: open a 3D nebula of memories, sessions and personas from the sidebar, curate entries, and give the agent tools to search and revise memories (backed by the memory-nebula project)."
+  }
+}
