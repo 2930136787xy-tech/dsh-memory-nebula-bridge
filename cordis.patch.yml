@@ -1,0 +1,7 @@
+# 记忆星云：把 memory-nebula 的 viewer_server.py 作为本地 sidecar 拉起。
+# dataDir 留空时按顺序找：$DSH_MEMORY_NEBULA_DIR → ~/.dsh/memory-nebula → ~/memory-nebula → ~/Documents/memory-nebula
+# 想固定路径就在自己的 profile patch 里覆盖 config.dataDir。
+- insert:
+    - id: dsh-memory-nebula-bridge
+      name: 'dsh-memory-nebula-bridge'
+      config: {}
