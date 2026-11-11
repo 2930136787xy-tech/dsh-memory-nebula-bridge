@@ -8,6 +8,14 @@
 - **智能体工具**：`nebula_status`（状态）、`nebula_search`（按关键词检索记忆）、`nebula_memory_update`（pin / forget / restore / edit / delete / merge）；
 - **本地 sidecar**：插件启动时用 Python 拉起 `viewer_server.py`，只监听 `127.0.0.1`，随 DSH 一起退出。
 
+## 安装
+
+```bash
+dsh plugin add github:2930136787xy-tech/dsh-memory-nebula-bridge
+```
+
+装完在「插件」页确认已启用。左侧栏底部出现「记忆星云」按钮；若按钮没出现，刷新一次页面。
+
 ## 前置条件
 
 1. Python 3.9+（`py -3`、`python` 或 `python3` 任一可用）；
