@@ -1,35 +1,69 @@
 # 记忆星云 · Memory Nebula（DSH 插件）
 
-> **English**: Bridges an existing memory-nebula project (`viewer_server.py` + `brain.db`/`bridge.db`) into DeepSeek Harness. It starts the viewer as a local sidecar on `127.0.0.1`, adds a **panel inside the DSH UI** (search memories, read one, edit its text, raise/lower importance, pin, forget/restore, jump to the full 3D graph), and registers three agent tools — `nebula_status`, `nebula_search`, `nebula_memory_update` — so the model can recall and curate memories. Requires Python 3.9+. No bundled data.
+> **English**: Gives DeepSeek Harness its own memory. The plugin ships the memory-nebula runtime, scaffolds a private store on first run (`~/.dsh/memory-nebula`), serves the 3D star map as a local sidecar on `127.0.0.1`, and adds an **in-UI panel** (search, edit, importance, pin, forget/restore, batch merge) plus six agent tools — `nebula_status`, `nebula_recall`, `nebula_remember`, `nebula_search`, `nebula_mood`, `nebula_memory_update`. No chat app, no account, no data bundled. Requires Python 3.9+.
 
-把「记忆星云」（memory-nebula）记忆库接进 DeepSeek Harness：
+给 DeepSeek Harness 一份**属于使用者自己**的记忆：能想起来、能记住、能看见，不需要任何聊天软件。
 
-- **侧栏面板**：左下角「记忆星云」按钮打开**页面内面板**——搜索记忆、看正文、**编辑正文**、调重要度、设/取消永久、忘掉/恢复，面板右上角可跳转完整三维星云；
-- **智能体工具**：`nebula_status`（状态）、`nebula_search`（按关键词检索记忆）、`nebula_memory_update`（pin / forget / restore / edit / delete / merge）；
-- **本地 sidecar**：插件启动时用 Python 拉起 `viewer_server.py`，只监听 `127.0.0.1`，随 DSH 一起退出。
+- **零准备**：插件自带框架，第一次启动就在 `~/.dsh/memory-nebula` 建一份空库，数据全在本机；
+- **侧栏面板**：左下角「记忆星云」按钮打开页面内面板——搜索、看正文、改正文、调重要度、置顶、忘掉/恢复、批量合并，右上角可跳完整三维星云；
+- **会话工具**：六个智能体工具，让模型自己检索、写入、维护记忆，并读写心情；
+- **本地 sidecar**：用 Python 拉起 `viewer_server.py`，只监听 `127.0.0.1`，随 DSH 一起退出；
+- **不主动发言**：不推送消息、不打断对话，只在你或模型调用时读写记忆。
 
 ## 安装
 
 ```bash
 dsh plugin add github:2930136787xy-tech/dsh-memory-nebula-bridge
+# 或者用 Release 里的包（不需要 git）：
+dsh plugin add https://github.com/2930136787xy-tech/dsh-memory-nebula-bridge/releases/download/v0.3.0/dsh-memory-nebula-bridge-0.3.0.tgz
 ```
 
 装完在「插件」页确认已启用。左侧栏底部出现「记忆星云」按钮；若按钮没出现，刷新一次页面。
 
+## 装完之后，DSH 会话里多了什么
+
+### 面板（侧栏「记忆星云」）
+
+| 能力 | 说明 |
+|---|---|
+| 三维星云 | 记忆/会话/日期/摘要/人格/核心六类球；球径是重要度，灰度是遗忘程度 |
+| 搜索 | 关键词过滤，可只看永久、只看已遗忘 |
+| 改单条 | 改正文、调重要度、置顶/取消、忘掉/恢复、删除 |
+| 批量 | 多选合并、批量置顶、批量忘掉 |
+| 打开完整页 | 跳转本机 `127.0.0.1:<端口>` 的三维页面 |
+
+### 会话里的工具
+
+| 工具 | 作用 | 典型触发 |
+|---|---|---|
+| `nebula_status` | 是否运行、库路径、记忆条数、心情 | 「你还记得多少」 |
+| `nebula_recall` | 按相关度取回（重要度 + 新近度 + 永久 + 关键词加权） | 回答前先想起来 |
+| `nebula_remember` | 写入一条记忆（自动去重，可设重要度/永久） | 「记住我喜欢…」 |
+| `nebula_search` | 按关键词模糊匹配 | 精确找某句话 |
+| `nebula_mood` | 读/写心情（效价、唤醒、亲近） | 「你现在心情如何」 |
+| `nebula_memory_update` | important / less / pin / unpin / forget / restore / edit / delete / merge | 「把这条设成永久」 |
+
+### 明确不做的
+
+- **不会主动发言**：不推送消息、不插话；
+- 不做多账号、不做远程访问，服务只绑 `127.0.0.1`。
+
 ## 前置条件
 
 1. Python 3.9+（`py -3`、`python` 或 `python3` 任一可用）；
-2. 一份 memory-nebula 项目目录（含 `viewer_server.py`、`memory_view.py`、`web/`），里面有 `brain.db` 和/或 `bridge.db`。
+2. 想用自己的库就配 `config.dataDir`；不配则第一次启动自动在 `~/.dsh/memory-nebula` 建空库。
 
-## 快速试用（还没有记忆库）
-
-在 memory-nebula 项目目录里生成一套虚构演示数据（四个虚构人物、两份库、26 条摘要）：
+## 从零建自己的记忆库 / 导入已有记忆
 
 ```bash
-python demo/make_demo.py
+# 建库（可指定人格；会复制一份完整框架到目标目录）
+python framework/tools/init_store.py D:\my-memory --persona 10001=我自己 --admin 10001
+
+# 导入任何来源的记忆（JSONL / JSON / CSV / 纯文本，自动去重）
+python framework/tools/import_memories.py D:\my-memory --file notes.jsonl --conversation app:notes
 ```
 
-它会在项目根目录生成 `data/`、`personas/`、`brain.db`、`bridge.db`、`config.json`（都在 `.gitignore` 里）。然后把 `config.dataDir` 指向这个目录即可——用的是虚构数据，不会碰到任何真实聊天记录。
+然后把 `config.dataDir` 指向 `D:\my-memory`。
 
 ## 配置
 
@@ -41,28 +75,23 @@ python demo/make_demo.py
 4. `~/memory-nebula`
 5. `~/Documents/memory-nebula`
 
+都没有时，插件会用自带框架在 `~/.dsh/memory-nebula` 自动建库（`autoInit: false` 可关掉）。
+
 ```yaml
 - id: dsh-memory-nebula-bridge
   name: 'dsh-memory-nebula-bridge'
   config:
     dataDir: 'D:/path/to/memory-nebula'
-    python: 'py -3'     # 可选：显式指定解释器
-    port: 8765          # 可选：侧车端口，默认自动挑空闲端口
-    statusPort: 6183    # 可选：页面读状态的本地端口
+    python: 'py -3'      # 可选：显式指定解释器
+    port: 8765           # 可选：侧车端口，默认自动挑空闲端口
+    statusPort: 6183     # 可选：页面读状态的本地端口
+    autoInit: true       # 可选：没有库时是否自动建一个
 ```
-
-## 工具
-
-| 工具 | 作用 |
-|---|---|
-| `nebula_status` | 是否运行、数据目录、访问地址、各类型节点计数 |
-| `nebula_search` | 按关键词模糊匹配记忆正文，返回节点 id、正文、重要度、是否永久、状态 |
-| `nebula_memory_update` | 对 `mem:<库>:<id>` 执行 important / less / pin / unpin / forget / restore / edit / delete / merge |
 
 ## 安全
 
-- 侧车只绑 `127.0.0.1`，不对外网开放；
-- 插件包内不含任何真实记忆、账号或密钥，数据全部留在你自己的目录里；
+- sidecar 只绑 `127.0.0.1`，不对外网开放；
+- 插件包内不含任何真实记忆、账号或密钥，数据全部留在使用者自己的目录里；
 - 星云页面的账号模式、只读模式仍由 memory-nebula 自己控制。
 
 ## 许可

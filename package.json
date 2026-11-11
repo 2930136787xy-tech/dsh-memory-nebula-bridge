@@ -1,8 +1,8 @@
 {
   "name": "dsh-memory-nebula-bridge",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
-  "description": "Bridge a memory-nebula store into DeepSeek Harness: an in-UI panel to search, edit, pin and forget memories, plus three agent tools. 把「记忆星云」记忆库接进 DSH：页面内记忆面板 + 三个智能体工具。",
+  "description": "Give DeepSeek Harness its own memory: a self-hosted memory store it can recall from, write to, and show as a 3D star map — no chat app required. 给 DSH 一份属于使用者自己的记忆：能想起来、能记住、能看见，不需要任何聊天软件。",
   "keywords": [
     "dsh",
     "dsh-plugin",
@@ -32,12 +32,11 @@
     "cordis.patch.yml",
     "locale/*.json",
     "icon.svg",
-    "README.md"
+    "README.md",
+    "framework/**",
+    "test/smoke.mjs",
+    "test/host.mjs"
   ],
-  "scripts": {
-    "test": "node test/smoke.mjs",
-    "test:host": "node test/host.mjs"
-  },
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
@@ -47,5 +46,9 @@
       "immediately": true,
       "inject": []
     }
+  },
+  "scripts": {
+    "test": "node test/smoke.mjs",
+    "test:host": "node test/host.mjs"
   }
 }
