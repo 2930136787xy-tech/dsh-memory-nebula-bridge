@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Memory Nebula">
+  <defs>
+    <radialGradient id="core" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffd9f2" stop-opacity="1"/>
+      <stop offset="45%" stop-color="#b06bff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#4a1d8f" stop-opacity="0.9"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7fd8ff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#ff9be8" stop-opacity="0.95"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#150c26"/>
+  <circle cx="32" cy="32" r="30" fill="url(#halo)"/>
+  <ellipse cx="32" cy="32" rx="25" ry="11" fill="none" stroke="url(#ring)" stroke-width="2" opacity="0.75" transform="rotate(-28 32 32)"/>
+  <ellipse cx="32" cy="32" rx="25" ry="11" fill="none" stroke="url(#ring)" stroke-width="1.5" opacity="0.45" transform="rotate(34 32 32)"/>
+  <circle cx="32" cy="32" r="8.5" fill="url(#core)"/>
+  <circle cx="49" cy="23" r="2.6" fill="#bfe9ff"/>
+  <circle cx="15" cy="42" r="1.9" fill="#ffc4ef"/>
+  <circle cx="40" cy="47" r="1.5" fill="#d8c4ff" opacity="0.9"/>
+</svg>
